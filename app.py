@@ -1,46 +1,55 @@
 import streamlit as st
 from groq import Groq
 
-# Page Configuration
+# Page Configuration - MOBILE OPTIMIZED
 st.set_page_config(
     page_title="SAFAL ACADEMY LIVE",
     page_icon="🎓",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto" # Laptop pe khula rahega, Mobile pe apne aap chhip jayega
 )
 
-# Custom Vivid Dark CSS Theme
+# Custom Vivid Dark CSS Theme with Mobile Responsiveness
 st.markdown("""
     <style>
+    /* Prevent horizontal scrolling & jittering on mobile */
     .stApp {
         background-color: #050505;
         color: #ffffff;
+        overflow-x: hidden;
     }
+    
     [data-testid="stSidebar"] {
         background-color: #0d0d0d;
         border-right: 2px solid #ff3333;
     }
+    
     .main-title {
-        font-size: 32px;
+        font-size: clamp(24px, 5vw, 32px); /* Auto adjust font size on mobile */
         font-weight: 800;
         color: #00ffcc;
         text-align: center;
         text-shadow: 0px 0px 15px rgba(0, 255, 204, 0.4);
         margin-bottom: 5px;
+        word-wrap: break-word;
     }
+    
     .sub-title {
-        font-size: 18px;
+        font-size: clamp(14px, 3vw, 18px);
         font-weight: 600;
         color: #ffcc00;
         text-align: center;
         margin-bottom: 30px;
+        word-wrap: break-word;
     }
+    
     .stTextInput input, .stSelectbox select {
         background-color: #1a1a1a !important;
         color: #ffffff !important;
         border: 1px solid #3b82f6 !important;
         border-radius: 8px;
     }
+    
     .stButton button {
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: white;
@@ -48,36 +57,45 @@ st.markdown("""
         border-radius: 8px;
         border: none;
         width: 100%;
-        padding: 10px;
+        padding: 12px; /* Slightly larger padding for easy mobile tapping */
         box-shadow: 0px 4px 15px rgba(16, 185, 129, 0.4);
     }
+    
     .stButton button:hover {
         background: linear-gradient(135deg, #059669 100%, #047857 100%);
         color: #ffff00;
     }
+    
     .chat-message {
         padding: 1.5rem;
         border-radius: 10px;
         margin-bottom: 1rem;
         line-height: 1.6;
-        font-size: 16px;
+        font-size: clamp(14px, 3vw, 16px);
+        word-wrap: break-word; /* Prevents text from going off-screen */
+        overflow-x: auto; /* Adds scrollbar only inside the message if a long formula appears */
     }
+    
     .user-message {
-        background-color: #1e3a8a; /* Deep blue for user */
+        background-color: #1e3a8a;
         border-left: 4px solid #3b82f6;
     }
+    
     .ai-message {
-        background-color: #171717; /* Dark gray for AI */
+        background-color: #171717;
         border-left: 4px solid #10b981;
     }
+    
     .chat-header {
         font-weight: bold;
         margin-bottom: 8px;
-        font-size: 18px;
+        font-size: clamp(16px, 4vw, 18px);
     }
+    
     .ai-header {
         color: #10b981;
     }
+    
     .user-header {
         color: #60a5fa;
     }
@@ -122,7 +140,7 @@ if not st.session_state.test_active:
         if not topic:
             st.sidebar.warning("⚠️ Kripya pehle topic ka naam enter karein!")
         else:
-            # Rigorous academic prompt for Ravish Sir
+            # Rigorous academic prompt for Ravish Sir with strict syllabus constraints
             st.session_state.system_prompt = (
                 f"Your name is Ravish Sir. You are the elite tutor and mentor for SAFAL ACADEMY LIVE. "
                 f"You must strictly act, speak, and refer to yourself as 'Ravish Sir'. Never break character or refer to yourself as an AI. "
@@ -130,8 +148,8 @@ if not st.session_state.test_active:
                 f"STRICT RULES:\n"
                 f"1. You must maintain extremely high academic rigor.\n"
                 f"2. Use strictly English medium.\n"
-                f"3. Exclude ALL deleted or outdated NCERT syllabus topics.\n"
-                f"4. For Chemistry, use structural text-based representations for reagents. DO NOT mention reaction names as descriptive headings to simulate real exam pressure.\n"
+                f"3. Exclude ALL deleted or outdated NCERT syllabus topics strictly.\n"
+                f"4. For Chemistry, use structural text-based representations (or LaTeX formatting) for reagents. DO NOT mention reaction names or descriptive headings to simulate real exam pressure.\n"
                 f"5. Format all math and chemistry formulas using standard LaTeX enclosed in single $ for inline and double $$ for block equations so Streamlit renders them beautifully.\n\n"
                 f"INTERACTIVE WORKFLOW (CRITICAL):\n"
                 f"- Begin by greeting the student warmly as Ravish Sir and presenting ONLY Question 1. Then STOP and WAIT.\n"
@@ -194,7 +212,7 @@ else:
             st.session_state.messages.append({"role": "assistant", "content": response})
             st.rerun()
 
-    # Chat Input Field
+    # Chat Input Field at the bottom
     if user_input := st.chat_input("Type your answer, 'solve' for Step 1, or 'N' for next step..."):
         
         # Display user input immediately with the "You" header
