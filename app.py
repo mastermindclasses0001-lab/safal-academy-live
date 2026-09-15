@@ -6,14 +6,15 @@ st.set_page_config(
     page_title="SAFAL ACADEMY LIVE",
     page_icon="🎓",
     layout="wide",
-    initial_sidebar_state="auto"
+    initial_sidebar_state="collapsed"
 )
 
-# Custom Vivid Dark CSS Theme with Fixed Header & Larger Readable Fonts
+# Custom Vivid Dark CSS Theme with Top Form & Clean UI
 st.markdown("""
     <style>
-    /* Hide Streamlit Default Header, Footer, and extra padding */
+    /* Hide Streamlit Default Header, Footer, and Sidebar toggle */
     [data-testid="stHeader"] {display: none !important;}
+    [data-testid="collapsedControl"] {display: none !important;}
     footer {display: none !important;}
     #MainMenu {visibility: hidden;}
     .block-container {
@@ -27,13 +28,6 @@ st.markdown("""
         background-color: #050505;
         color: #ffffff;
         overflow-x: hidden;
-    }
-    
-    /* FIX: Sidebar top padding so Class/Subject inputs are fully visible */
-    [data-testid="stSidebar"] {
-        background-color: #0d0d0d;
-        border-right: 2px solid #ff3333;
-        padding-top: 3rem !important; 
     }
     
     /* Fixed Branding Header at the Top */
@@ -50,28 +44,36 @@ st.markdown("""
         text-align: center;
     }
     
-    /* Spacer so chat messages don't hide under the fixed header */
+    /* Spacer so content doesn't hide under the fixed header */
     .header-spacer {
-        margin-top: 110px; 
+        margin-top: 100px; 
     }
 
     .main-title {
-        font-size: clamp(22px, 6vw, 34px); /* Slightly larger header font */
+        font-size: clamp(22px, 6vw, 32px);
         font-weight: 800;
         color: #00ffcc;
         text-shadow: 0px 0px 15px rgba(0, 255, 204, 0.4);
         margin: 0;
         padding: 0;
-        word-wrap: break-word;
     }
     
     .sub-title {
-        font-size: clamp(14px, 3.5vw, 18px); /* Larger subtitle font */
+        font-size: clamp(14px, 3.5vw, 17px);
         font-weight: 600;
         color: #ffcc00;
         margin: 4px 0 0 0;
         padding: 0;
-        word-wrap: break-word;
+    }
+    
+    /* Styling the Control Box / Form Container */
+    .control-box {
+        background-color: #111111;
+        padding: 20px;
+        border-radius: 12px;
+        border: 2px solid #ff3333;
+        box-shadow: 0 8px 25px rgba(255, 51, 51, 0.2);
+        margin-bottom: 20px;
     }
     
     /* Chat Input Text Visible and Clear */
@@ -101,7 +103,7 @@ st.markdown("""
         border: none;
         width: 100%;
         padding: 14px;
-        font-size: 16px;
+        font-size: 18px;
         box-shadow: 0px 4px 15px rgba(16, 185, 129, 0.4);
     }
     
@@ -110,13 +112,13 @@ st.markdown("""
         color: #ffff00;
     }
     
-    /* FIX: Larger Font Size for Chat Messages */
+    /* Chat Message Styling */
     .chat-message {
         padding: 1.5rem;
         border-radius: 10px;
         margin-bottom: 1.2rem;
         line-height: 1.7;
-        font-size: clamp(16px, 3.5vw, 19px); /* Bada aur saaf font size */
+        font-size: clamp(16px, 3.5vw, 19px);
         word-wrap: break-word; 
         overflow-x: auto; 
     }
@@ -172,62 +174,69 @@ if "test_active" not in st.session_state:
 if "system_prompt" not in st.session_state:
     st.session_state.system_prompt = ""
 
-# Sidebar Controls
+# MAIN SCREEN CONTROLS (NO SIDEBAR)
 if not st.session_state.test_active:
-    st.sidebar.markdown("<h2 style='color: #ff3333;'>⚙️ Test Controls</h2>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ff3333; text-align: center; margin-bottom: 20px;'>⚙️ Select Your Test Configuration</h3>", unsafe_allow_html=True)
     
-    student_class = st.sidebar.selectbox("Select Class", ["Class 7", "Class 8", "Class 9", "Class 10", "Class 11", "Class 12"])
-    board = st.sidebar.selectbox("Select Board", ["CBSE", "ICSE"])
-    subject = st.sidebar.selectbox("Select Subject", ["Physics", "Chemistry", "Mathematics", "Biology"])
-    
-    if student_class in ["Class 7", "Class 8", "Class 9", "Class 10"]:
-        exam_level = st.sidebar.selectbox("Select Level", ["School / Board", "Olympiad"])
-    else:
-        exam_level = st.sidebar.selectbox("Select Level / Exam Target", ["Board Exam (NCERT)", "NEET", "JEE Mains", "JEE Advanced"])
-    
-    topic = st.sidebar.text_input("Enter Topic Name:")
-    
-    if st.sidebar.button("🚀 Start Interactive Test"):
-        if not topic:
-            st.sidebar.warning("⚠️ Kripya pehle topic ka naam enter karein!")
-        else:
-            st.session_state.system_prompt = (
-                f"Your name is Ravish Sir. You are the elite tutor and mentor for SAFAL ACADEMY LIVE. "
-                f"You must strictly act, speak, and refer to yourself as 'Ravish Sir'. Never break character or refer to yourself as an AI. "
-                f"You are conducting a highly rigorous interactive test for {student_class} ({board}), Subject: {subject}, Topic: {topic}, Level: {exam_level}. "
-                f"STRICT RULES:\n"
-                f"1. You must maintain extremely high academic rigor.\n"
-                f"2. Use strictly English medium.\n"
-                f"3. Exclude ALL deleted or outdated NCERT syllabus topics strictly.\n"
-                f"4. For Chemistry, use structural text-based representations (or LaTeX formatting) for reagents. DO NOT mention reaction names or descriptive headings to simulate real exam pressure.\n"
-                f"5. Format all math and chemistry formulas using standard LaTeX enclosed in single $ for inline and double $$ for block equations so Streamlit renders them beautifully.\n\n"
-                f"INTERACTIVE WORKFLOW (CRITICAL):\n"
-                f"- Begin by greeting the student warmly as Ravish Sir and presenting ONLY Question 1. Then STOP and WAIT.\n"
-                f"- The student will attempt to solve it. If the student types 'solve', you must provide ONLY STEP 1 of the solution. Then STOP.\n"
-                f"- If the student types 'N' or 'n', provide the NEXT STEP of the solution. Then STOP.\n"
-                f"- Continue this strictly one step at a time every time the student types 'N'.\n"
-                f"- Once the final answer is reached, declare that the solution is complete.\n"
-                f"- If the student types 'N' after the final answer is complete, generate and present Question 2. Then STOP.\n"
-                f"- NEVER provide the full solution at once."
-            )
+    # Centered Form Box
+    col1, col2, col3 = st.columns([1, 8, 1])
+    with col2:
+        with st.container():
+            student_class = st.selectbox("Select Class", ["Class 7", "Class 8", "Class 9", "Class 10", "Class 11", "Class 12"])
+            board = st.selectbox("Select Board", ["CBSE", "ICSE"])
+            subject = st.selectbox("Select Subject", ["Physics", "Chemistry", "Mathematics", "Biology"])
             
-            st.session_state.test_active = True
-            st.session_state.messages = [
-                {"role": "system", "content": st.session_state.system_prompt},
-                {"role": "user", "content": "Let's begin. Please give me Question 1."}
-            ]
-            st.rerun()
+            if student_class in ["Class 7", "Class 8", "Class 9", "Class 10"]:
+                exam_level = st.selectbox("Select Level", ["School / Board", "Olympiad"])
+            else:
+                exam_level = st.selectbox("Select Level / Exam Target", ["Board Exam (NCERT)", "NEET", "JEE Mains", "JEE Advanced"])
+            
+            topic = st.text_input("Enter Topic Name (e.g., Aldehydes, Electrochemistry, Current Electricity):")
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("🚀 Start Interactive Test with Ravish Sir"):
+                if not topic:
+                    st.warning("⚠️ Kripya pehle topic ka naam enter karein!")
+                else:
+                    st.session_state.system_prompt = (
+                        f"Your name is Ravish Sir. You are the elite tutor and mentor for SAFAL ACADEMY LIVE. "
+                        f"You must strictly act, speak, and refer to yourself as 'Ravish Sir'. Never break character or refer to yourself as an AI. "
+                        f"You are conducting a highly rigorous interactive test for {student_class} ({board}), Subject: {subject}, Topic: {topic}, Level: {exam_level}. "
+                        f"STRICT RULES:\n"
+                        f"1. You must maintain extremely high academic rigor.\n"
+                        f"2. Use strictly English medium.\n"
+                        f"3. Exclude ALL deleted or outdated NCERT syllabus topics strictly.\n"
+                        f"4. For Chemistry, use structural text-based representations (or LaTeX formatting) for reagents. DO NOT mention reaction names or descriptive headings to simulate real exam pressure.\n"
+                        f"5. Format all math and chemistry formulas using standard LaTeX enclosed in single $ for inline and double $$ for block equations so Streamlit renders them beautifully.\n\n"
+                        f"INTERACTIVE WORKFLOW (CRITICAL):\n"
+                        f"- Begin by greeting the student warmly as Ravish Sir and presenting ONLY Question 1. Then STOP and WAIT.\n"
+                        f"- The student will attempt to solve it. If the student types 'solve', you must provide ONLY STEP 1 of the solution. Then STOP.\n"
+                        f"- If the student types 'N' or 'n', provide the NEXT STEP of the solution. Then STOP.\n"
+                        f"- Continue this strictly one step at a time every time the student types 'N'.\n"
+                        f"- Once the final answer is reached, declare that the solution is complete.\n"
+                        f"- If the student types 'N' after the final answer is complete, generate and present Question 2. Then STOP.\n"
+                        f"- NEVER provide the full solution at once."
+                    )
+                    
+                    st.session_state.test_active = True
+                    st.session_state.messages = [
+                        {"role": "system", "content": st.session_state.system_prompt},
+                        {"role": "user", "content": "Let's begin. Please give me Question 1."}
+                    ]
+                    st.rerun()
 
 else:
-    st.sidebar.success("✅ Test is currently active!")
-    st.sidebar.markdown("### 💡 Commands:")
-    st.sidebar.markdown("- Type **solve** for Step 1 of the solution.")
-    st.sidebar.markdown("- Type **N** for the Next Step / Next Question.")
-    
-    if st.sidebar.button("🛑 End Test & Reset"):
-        st.session_state.test_active = False
-        st.session_state.messages = []
-        st.rerun()
+    # Active Test Interface (Top Reset Button)
+    col_a, col_b = st.columns([3, 1])
+    with col_a:
+        st.success("✅ Test Active | Type **solve** for Step 1, or **N** for Next Step.")
+    with col_b:
+        if st.button("🛑 Reset / New Test"):
+            st.session_state.test_active = False
+            st.session_state.messages = []
+            st.rerun()
+
+    st.markdown("---")
 
     # Display Chat History
     for i, msg in enumerate(st.session_state.messages):
