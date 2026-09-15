@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom Vivid Dark CSS Theme with Top Form & Clean UI
+# Custom Vivid Dark CSS Theme with Mobile-Specific Responsiveness
 st.markdown("""
     <style>
     /* Hide Streamlit Default Header, Footer, and Sidebar toggle */
@@ -21,6 +21,8 @@ st.markdown("""
         padding-top: 0rem !important;
         padding-bottom: 0rem !important;
         margin-top: 0rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
 
     /* Prevent horizontal scrolling */
@@ -38,7 +40,7 @@ st.markdown("""
         width: 100%;
         background-color: #050505;
         z-index: 9999;
-        padding: 12px 0 10px 0;
+        padding: 10px 5px 8px 5px;
         border-bottom: 2px solid #10b981;
         box-shadow: 0 4px 15px rgba(0,0,0,0.6);
         text-align: center;
@@ -46,11 +48,11 @@ st.markdown("""
     
     /* Spacer so content doesn't hide under the fixed header */
     .header-spacer {
-        margin-top: 100px; 
+        margin-top: 90px; 
     }
 
     .main-title {
-        font-size: clamp(22px, 6vw, 32px);
+        font-size: clamp(20px, 5vw, 28px);
         font-weight: 800;
         color: #00ffcc;
         text-shadow: 0px 0px 15px rgba(0, 255, 204, 0.4);
@@ -59,28 +61,29 @@ st.markdown("""
     }
     
     .sub-title {
-        font-size: clamp(14px, 3.5vw, 17px);
+        font-size: clamp(12px, 3vw, 15px);
         font-weight: 600;
         color: #ffcc00;
-        margin: 4px 0 0 0;
+        margin: 2px 0 0 0;
         padding: 0;
     }
     
-    /* Styling the Control Box / Form Container */
-    .control-box {
+    /* Mobile Responsive Form Container */
+    .form-container {
         background-color: #111111;
-        padding: 20px;
+        padding: 15px;
         border-radius: 12px;
         border: 2px solid #ff3333;
         box-shadow: 0 8px 25px rgba(255, 51, 51, 0.2);
-        margin-bottom: 20px;
+        margin: 10px auto;
+        max-width: 600px;
     }
-    
+
     /* Chat Input Text Visible and Clear */
     [data-testid="stChatInput"] textarea {
         color: #ffffff !important;
         background-color: #1a1a1a !important;
-        font-size: 18px !important;
+        font-size: 16px !important;
     }
     [data-testid="stChatInputContainer"] {
         border: 2px solid #3b82f6 !important;
@@ -92,7 +95,7 @@ st.markdown("""
         color: #ffffff !important;
         border: 1px solid #3b82f6 !important;
         border-radius: 8px;
-        font-size: 16px !important;
+        font-size: 15px !important;
     }
     
     .stButton button {
@@ -102,8 +105,8 @@ st.markdown("""
         border-radius: 8px;
         border: none;
         width: 100%;
-        padding: 14px;
-        font-size: 18px;
+        padding: 12px;
+        font-size: 16px;
         box-shadow: 0px 4px 15px rgba(16, 185, 129, 0.4);
     }
     
@@ -112,13 +115,13 @@ st.markdown("""
         color: #ffff00;
     }
     
-    /* Chat Message Styling */
+    /* Chat Message Styling for Mobile & Laptop */
     .chat-message {
-        padding: 1.5rem;
+        padding: 1.2rem;
         border-radius: 10px;
-        margin-bottom: 1.2rem;
-        line-height: 1.7;
-        font-size: clamp(16px, 3.5vw, 19px);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+        font-size: clamp(15px, 3.5vw, 18px);
         word-wrap: break-word; 
         overflow-x: auto; 
     }
@@ -135,8 +138,8 @@ st.markdown("""
     
     .chat-header {
         font-weight: bold;
-        margin-bottom: 10px;
-        font-size: clamp(18px, 4vw, 21px);
+        margin-bottom: 8px;
+        font-size: clamp(16px, 4vw, 19px);
     }
     
     .ai-header {
@@ -145,6 +148,21 @@ st.markdown("""
     
     .user-header {
         color: #60a5fa;
+    }
+
+    /* MEDIA QUERY FOR MOBILE DEVICES (Screens smaller than 768px) */
+    @media screen and (max-width: 768px) {
+        .block-container {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        .form-container {
+            padding: 10px;
+            border: 1px solid #ff3333;
+        }
+        .header-spacer {
+            margin-top: 80px;
+        }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -174,64 +192,67 @@ if "test_active" not in st.session_state:
 if "system_prompt" not in st.session_state:
     st.session_state.system_prompt = ""
 
-# MAIN SCREEN CONTROLS (NO SIDEBAR)
+# MOBILE & LAPTOP OPTIMIZED FORM SCREEN
 if not st.session_state.test_active:
-    st.markdown("<h3 style='color: #ff3333; text-align: center; margin-bottom: 20px;'>⚙️ Select Your Test Configuration</h3>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: #ff3333; text-align: center; margin-bottom: 15px;'>⚙️ Select Your Test Configuration</h4>", unsafe_allow_html=True)
     
-    # Centered Form Box
-    col1, col2, col3 = st.columns([1, 8, 1])
+    # Responsive container layout
+    col1, col2, col3 = st.columns([0.05, 0.9, 0.05])
     with col2:
-        with st.container():
-            student_class = st.selectbox("Select Class", ["Class 7", "Class 8", "Class 9", "Class 10", "Class 11", "Class 12"])
-            board = st.selectbox("Select Board", ["CBSE", "ICSE"])
-            subject = st.selectbox("Select Subject", ["Physics", "Chemistry", "Mathematics", "Biology"])
-            
-            if student_class in ["Class 7", "Class 8", "Class 9", "Class 10"]:
-                exam_level = st.selectbox("Select Level", ["School / Board", "Olympiad"])
+        st.markdown('<div class="form-container">', unsafe_allow_html=True)
+        
+        student_class = st.selectbox("Select Class", ["Class 7", "Class 8", "Class 9", "Class 10", "Class 11", "Class 12"])
+        board = st.selectbox("Select Board", ["CBSE", "ICSE"])
+        subject = st.selectbox("Select Subject", ["Physics", "Chemistry", "Mathematics", "Biology"])
+        
+        if student_class in ["Class 7", "Class 8", "Class 9", "Class 10"]:
+            exam_level = st.selectbox("Select Level", ["School / Board", "Olympiad"])
+        else:
+            exam_level = st.selectbox("Select Level / Exam Target", ["Board Exam (NCERT)", "NEET", "JEE Mains", "JEE Advanced"])
+        
+        topic = st.text_input("Enter Topic Name (e.g., Aldehydes, Current Electricity):")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("🚀 Start Interactive Test with Ravish Sir"):
+            if not topic:
+                st.warning("⚠️ Kripya pehle topic ka naam enter karein!")
             else:
-                exam_level = st.selectbox("Select Level / Exam Target", ["Board Exam (NCERT)", "NEET", "JEE Mains", "JEE Advanced"])
-            
-            topic = st.text_input("Enter Topic Name (e.g., Aldehydes, Electrochemistry, Current Electricity):")
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            if st.button("🚀 Start Interactive Test with Ravish Sir"):
-                if not topic:
-                    st.warning("⚠️ Kripya pehle topic ka naam enter karein!")
-                else:
-                    st.session_state.system_prompt = (
-                        f"Your name is Ravish Sir. You are the elite tutor and mentor for SAFAL ACADEMY LIVE. "
-                        f"You must strictly act, speak, and refer to yourself as 'Ravish Sir'. Never break character or refer to yourself as an AI. "
-                        f"You are conducting a highly rigorous interactive test for {student_class} ({board}), Subject: {subject}, Topic: {topic}, Level: {exam_level}. "
-                        f"STRICT RULES:\n"
-                        f"1. You must maintain extremely high academic rigor.\n"
-                        f"2. Use strictly English medium.\n"
-                        f"3. Exclude ALL deleted or outdated NCERT syllabus topics strictly.\n"
-                        f"4. For Chemistry, use structural text-based representations (or LaTeX formatting) for reagents. DO NOT mention reaction names or descriptive headings to simulate real exam pressure.\n"
-                        f"5. Format all math and chemistry formulas using standard LaTeX enclosed in single $ for inline and double $$ for block equations so Streamlit renders them beautifully.\n\n"
-                        f"INTERACTIVE WORKFLOW (CRITICAL):\n"
-                        f"- Begin by greeting the student warmly as Ravish Sir and presenting ONLY Question 1. Then STOP and WAIT.\n"
-                        f"- The student will attempt to solve it. If the student types 'solve', you must provide ONLY STEP 1 of the solution. Then STOP.\n"
-                        f"- If the student types 'N' or 'n', provide the NEXT STEP of the solution. Then STOP.\n"
-                        f"- Continue this strictly one step at a time every time the student types 'N'.\n"
-                        f"- Once the final answer is reached, declare that the solution is complete.\n"
-                        f"- If the student types 'N' after the final answer is complete, generate and present Question 2. Then STOP.\n"
-                        f"- NEVER provide the full solution at once."
-                    )
-                    
-                    st.session_state.test_active = True
-                    st.session_state.messages = [
-                        {"role": "system", "content": st.session_state.system_prompt},
-                        {"role": "user", "content": "Let's begin. Please give me Question 1."}
-                    ]
-                    st.rerun()
+                st.session_state.system_prompt = (
+                    f"Your name is Ravish Sir. You are the elite tutor and mentor for SAFAL ACADEMY LIVE. "
+                    f"You must strictly act, speak, and refer to yourself as 'Ravish Sir'. Never break character or refer to yourself as an AI. "
+                    f"You are conducting a highly rigorous interactive test for {student_class} ({board}), Subject: {subject}, Topic: {topic}, Level: {exam_level}. "
+                    f"STRICT RULES:\n"
+                    f"1. You must maintain extremely high academic rigor.\n"
+                    f"2. Use strictly English medium.\n"
+                    f"3. Exclude ALL deleted or outdated NCERT syllabus topics strictly.\n"
+                    f"4. For Chemistry, use structural text-based representations (or LaTeX formatting) for reagents. DO NOT mention reaction names or descriptive headings to simulate real exam pressure.\n"
+                    f"5. Format all math and chemistry formulas using standard LaTeX enclosed in single $ for inline and double $$ for block equations so Streamlit renders them beautifully.\n\n"
+                    f"INTERACTIVE WORKFLOW (CRITICAL):\n"
+                    f"- Begin by greeting the student warmly as Ravish Sir and presenting ONLY Question 1. Then STOP and WAIT.\n"
+                    f"- The student will attempt to solve it. If the student types 'solve', you must provide ONLY STEP 1 of the solution. Then STOP.\n"
+                    f"- If the student types 'N' or 'n', provide the NEXT STEP of the solution. Then STOP.\n"
+                    f"- Continue this strictly one step at a time every time the student types 'N'.\n"
+                    f"- Once the final answer is reached, declare that the solution is complete.\n"
+                    f"- If the student types 'N' after the final answer is complete, generate and present Question 2. Then STOP.\n"
+                    f"- NEVER provide the full solution at once."
+                )
+                
+                st.session_state.test_active = True
+                st.session_state.messages = [
+                    {"role": "system", "content": st.session_state.system_prompt},
+                    {"role": "user", "content": "Let's begin. Please give me Question 1."}
+                ]
+                st.rerun()
+                
+        st.markdown('</div>', unsafe_allow_html=True)
 
 else:
-    # Active Test Interface (Top Reset Button)
-    col_a, col_b = st.columns([3, 1])
+    # Active Test Interface
+    col_a, col_b = st.columns([2.5, 1])
     with col_a:
-        st.success("✅ Test Active | Type **solve** for Step 1, or **N** for Next Step.")
+        st.success("✅ Test Active | Type **solve** or **N**")
     with col_b:
-        if st.button("🛑 Reset / New Test"):
+        if st.button("🛑 Reset Test"):
             st.session_state.test_active = False
             st.session_state.messages = []
             st.rerun()
