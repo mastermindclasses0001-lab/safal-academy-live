@@ -202,15 +202,18 @@ else:
     # Handle Initial Question Generation (if we just started the test)
     if len(st.session_state.messages) == 2:
         with st.spinner("Ravish Sir is preparing Question 1..."):
-            chat_completion = client.chat.completions.create(
-                model="qwen/qwen3.8-27b",
-                messages=st.session_state.messages,
-                temperature=0.4,
-                max_tokens=1000
-            )
-            response = chat_completion.choices[0].message.content
-            st.session_state.messages.append({"role": "assistant", "content": response})
-            st.rerun()
+            try:
+                chat_completion = client.chat.completions.create(
+                    model="qwen/qwen3.8-27b",
+                    messages=st.session_state.messages,
+                    temperature=0.4,
+                    max_tokens=1000
+                )
+                response = chat_completion.choices[0].message.content
+                st.session_state.messages.append({"role": "assistant", "content": response})
+                st.rerun()
+            except Exception as e:
+                st.error("⚠️ Connection error. Kripya test ko reset karein ya page refresh karein.")
 
     # Chat Input Field at the bottom
     if user_input := st.chat_input("Type your answer, 'solve' for Step 1, or 'N' for next step..."):
@@ -221,13 +224,16 @@ else:
         st.session_state.messages.append({"role": "user", "content": user_input})
         
         with st.spinner("Ravish Sir is typing..."):
-            chat_completion = client.chat.completions.create(
-                model="qwen/qwen3.8-27b",
-                messages=st.session_state.messages,
-                temperature=0.4,
-                max_tokens=1000
-            )
-            
-            response = chat_completion.choices[0].message.content
-            st.session_state.messages.append({"role": "assistant", "content": response})
-            st.rerun()
+            try:
+                chat_completion = client.chat.completions.create(
+                    model="qwen/qwen3.8-27b",
+                    messages=st.session_state.messages,
+                    temperature=0.4,
+                    max_tokens=1000
+                )
+                
+                response = chat_completion.choices[0].message.content
+                st.session_state.messages.append({"role": "assistant", "content": response})
+                st.rerun()
+            except Exception as e:
+                st.error("⚠️ Connection mein thodi dikkat aa rahi hai. Kripya apna answer ya 'N' dobara type karein!")
