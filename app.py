@@ -1,17 +1,27 @@
 import streamlit as st
 from groq import Groq
 
-# Page Configuration - MOBILE OPTIMIZED
+# Page Configuration - MOBILE OPTIMIZED (Wide Layout)
 st.set_page_config(
     page_title="SAFAL ACADEMY LIVE",
     page_icon="🎓",
     layout="wide",
-    initial_sidebar_state="auto" # Laptop pe khula rahega, Mobile pe apne aap chhip jayega
+    initial_sidebar_state="auto"
 )
 
-# Custom Vivid Dark CSS Theme with Mobile Responsiveness
+# Custom Vivid Dark CSS Theme with Fixed Header & Visible Chat Input
 st.markdown("""
     <style>
+    /* Mimic Full Screen: Hide Streamlit Default Header, Footer, and extra padding */
+    [data-testid="stHeader"] {display: none !important;}
+    footer {display: none !important;}
+    #MainMenu {visibility: hidden;}
+    .block-container {
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+        margin-top: 0rem !important;
+    }
+
     /* Prevent horizontal scrolling & jittering on mobile */
     .stApp {
         background-color: #050505;
@@ -24,23 +34,53 @@ st.markdown("""
         border-right: 2px solid #ff3333;
     }
     
+    /* Fixed Branding Header at the Top */
+    .fixed-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #050505;
+        z-index: 9999;
+        padding: 15px 0 10px 0;
+        border-bottom: 2px solid #10b981;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        text-align: center;
+    }
+    
+    /* Spacer so chat messages don't hide under the fixed header */
+    .header-spacer {
+        margin-top: 100px; 
+    }
+
     .main-title {
-        font-size: clamp(24px, 5vw, 32px); /* Auto adjust font size on mobile */
+        font-size: clamp(20px, 5vw, 30px); 
         font-weight: 800;
         color: #00ffcc;
-        text-align: center;
         text-shadow: 0px 0px 15px rgba(0, 255, 204, 0.4);
-        margin-bottom: 5px;
+        margin: 0;
+        padding: 0;
         word-wrap: break-word;
     }
     
     .sub-title {
-        font-size: clamp(14px, 3vw, 18px);
+        font-size: clamp(12px, 3vw, 16px);
         font-weight: 600;
         color: #ffcc00;
-        text-align: center;
-        margin-bottom: 30px;
+        margin: 5px 0 0 0;
+        padding: 0;
         word-wrap: break-word;
+    }
+    
+    /* FIX: Make Chat Input Text Visible and Clear */
+    [data-testid="stChatInput"] textarea {
+        color: #ffffff !important;
+        background-color: #1a1a1a !important;
+        font-size: 16px !important;
+    }
+    [data-testid="stChatInputContainer"] {
+        border: 2px solid #3b82f6 !important;
+        border-radius: 10px !important;
     }
     
     .stTextInput input, .stSelectbox select {
@@ -57,7 +97,7 @@ st.markdown("""
         border-radius: 8px;
         border: none;
         width: 100%;
-        padding: 12px; /* Slightly larger padding for easy mobile tapping */
+        padding: 12px;
         box-shadow: 0px 4px 15px rgba(16, 185, 129, 0.4);
     }
     
@@ -72,8 +112,8 @@ st.markdown("""
         margin-bottom: 1rem;
         line-height: 1.6;
         font-size: clamp(14px, 3vw, 16px);
-        word-wrap: break-word; /* Prevents text from going off-screen */
-        overflow-x: auto; /* Adds scrollbar only inside the message if a long formula appears */
+        word-wrap: break-word; 
+        overflow-x: auto; 
     }
     
     .user-message {
@@ -102,11 +142,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# App Branding Header
-st.markdown('<p class="main-title">🎓 SAFAL ACADEMY LIVE</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-title">By Ravish Sir — Interactive Step-by-Step Tutor</p>', unsafe_allow_html=True)
+# Fixed App Branding Header
+st.markdown('''
+    <div class="fixed-header">
+        <p class="main-title">🎓 SAFAL ACADEMY LIVE</p>
+        <p class="sub-title">By Ravish Sir — Interactive Step-by-Step Tutor</p>
+    </div>
+    <div class="header-spacer"></div>
+''', unsafe_allow_html=True)
 
-# API Key Streamlit Secrets se automatically aayegi
+# API Key Check
 try:
     api_key = st.secrets["GROQ_API_KEY"]
     client = Groq(api_key=api_key)
@@ -114,7 +159,7 @@ except KeyError:
     st.error("⚠️ API Key not found! Please configure it in Streamlit Cloud Secrets.")
     st.stop()
 
-# Session State Initialization for Chat
+# Session State Initialization
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "test_active" not in st.session_state:
@@ -122,6 +167,7 @@ if "test_active" not in st.session_state:
 if "system_prompt" not in st.session_state:
     st.session_state.system_prompt = ""
 
+# Sidebar Controls
 if not st.session_state.test_active:
     st.sidebar.markdown("<h2 style='color: #ff3333;'>⚙️ Test Controls</h2>", unsafe_allow_html=True)
     
@@ -140,7 +186,6 @@ if not st.session_state.test_active:
         if not topic:
             st.sidebar.warning("⚠️ Kripya pehle topic ka naam enter karein!")
         else:
-            # Rigorous academic prompt for Ravish Sir with strict syllabus constraints
             st.session_state.system_prompt = (
                 f"Your name is Ravish Sir. You are the elite tutor and mentor for SAFAL ACADEMY LIVE. "
                 f"You must strictly act, speak, and refer to yourself as 'Ravish Sir'. Never break character or refer to yourself as an AI. "
@@ -158,10 +203,9 @@ if not st.session_state.test_active:
                 f"- Continue this strictly one step at a time every time the student types 'N'.\n"
                 f"- Once the final answer is reached, declare that the solution is complete.\n"
                 f"- If the student types 'N' after the final answer is complete, generate and present Question 2. Then STOP.\n"
-                f"- NEVER provide the full solution at once. NEVER provide multiple questions at once."
+                f"- NEVER provide the full solution at once."
             )
             
-            # Set test as active and clear previous messages
             st.session_state.test_active = True
             st.session_state.messages = [
                 {"role": "system", "content": st.session_state.system_prompt},
@@ -170,7 +214,6 @@ if not st.session_state.test_active:
             st.rerun()
 
 else:
-    # Side menu when test is active
     st.sidebar.success("✅ Test is currently active!")
     st.sidebar.markdown("### 💡 Commands:")
     st.sidebar.markdown("- Type **solve** for Step 1 of the solution.")
@@ -185,11 +228,9 @@ else:
     for i, msg in enumerate(st.session_state.messages):
         if msg["role"] == "system":
             continue
-        # Skip the hidden initialization prompt from the user
         if i == 1 and msg["content"] == "Let's begin. Please give me Question 1.":
             continue
         
-        # Add identity headers for the chat interface
         if msg["role"] == "user":
             css_class = "user-message"
             header = '<div class="chat-header user-header">👤 You</div>'
@@ -199,7 +240,7 @@ else:
             
         st.markdown(f'<div class="chat-message {css_class}">{header}{msg["content"]}</div>', unsafe_allow_html=True)
 
-    # Handle Initial Question Generation (if we just started the test)
+    # Initial Question Generation
     if len(st.session_state.messages) == 2:
         with st.spinner("Ravish Sir is preparing Question 1..."):
             try:
@@ -215,10 +256,9 @@ else:
             except Exception as e:
                 st.error("⚠️ Connection error. Kripya test ko reset karein ya page refresh karein.")
 
-    # Chat Input Field at the bottom
-    if user_input := st.chat_input("Type your answer, 'solve' for Step 1, or 'N' for next step..."):
+    # Chat Input Field
+    if user_input := st.chat_input("Type your answer, 'solve', or 'N' here..."):
         
-        # Display user input immediately with the "You" header
         header = '<div class="chat-header user-header">👤 You</div>'
         st.markdown(f'<div class="chat-message user-message">{header}{user_input}</div>', unsafe_allow_html=True)
         st.session_state.messages.append({"role": "user", "content": user_input})
