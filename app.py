@@ -1,7 +1,7 @@
 import streamlit as st
 from groq import Groq
 
-# Page Configuration - MOBILE OPTIMIZED (Wide Layout)
+# Page Configuration - MOBILE OPTIMIZED
 st.set_page_config(
     page_title="SAFAL ACADEMY LIVE",
     page_icon="🎓",
@@ -9,10 +9,10 @@ st.set_page_config(
     initial_sidebar_state="auto"
 )
 
-# Custom Vivid Dark CSS Theme with Fixed Header & Visible Chat Input
+# Custom Vivid Dark CSS Theme with Fixed Header & Larger Readable Fonts
 st.markdown("""
     <style>
-    /* Mimic Full Screen: Hide Streamlit Default Header, Footer, and extra padding */
+    /* Hide Streamlit Default Header, Footer, and extra padding */
     [data-testid="stHeader"] {display: none !important;}
     footer {display: none !important;}
     #MainMenu {visibility: hidden;}
@@ -22,16 +22,18 @@ st.markdown("""
         margin-top: 0rem !important;
     }
 
-    /* Prevent horizontal scrolling & jittering on mobile */
+    /* Prevent horizontal scrolling */
     .stApp {
         background-color: #050505;
         color: #ffffff;
         overflow-x: hidden;
     }
     
+    /* FIX: Sidebar top padding so Class/Subject inputs are fully visible */
     [data-testid="stSidebar"] {
         background-color: #0d0d0d;
         border-right: 2px solid #ff3333;
+        padding-top: 3rem !important; 
     }
     
     /* Fixed Branding Header at the Top */
@@ -42,7 +44,7 @@ st.markdown("""
         width: 100%;
         background-color: #050505;
         z-index: 9999;
-        padding: 15px 0 10px 0;
+        padding: 12px 0 10px 0;
         border-bottom: 2px solid #10b981;
         box-shadow: 0 4px 15px rgba(0,0,0,0.6);
         text-align: center;
@@ -50,11 +52,11 @@ st.markdown("""
     
     /* Spacer so chat messages don't hide under the fixed header */
     .header-spacer {
-        margin-top: 100px; 
+        margin-top: 110px; 
     }
 
     .main-title {
-        font-size: clamp(20px, 5vw, 30px); 
+        font-size: clamp(22px, 6vw, 34px); /* Slightly larger header font */
         font-weight: 800;
         color: #00ffcc;
         text-shadow: 0px 0px 15px rgba(0, 255, 204, 0.4);
@@ -64,19 +66,19 @@ st.markdown("""
     }
     
     .sub-title {
-        font-size: clamp(12px, 3vw, 16px);
+        font-size: clamp(14px, 3.5vw, 18px); /* Larger subtitle font */
         font-weight: 600;
         color: #ffcc00;
-        margin: 5px 0 0 0;
+        margin: 4px 0 0 0;
         padding: 0;
         word-wrap: break-word;
     }
     
-    /* FIX: Make Chat Input Text Visible and Clear */
+    /* Chat Input Text Visible and Clear */
     [data-testid="stChatInput"] textarea {
         color: #ffffff !important;
         background-color: #1a1a1a !important;
-        font-size: 16px !important;
+        font-size: 18px !important;
     }
     [data-testid="stChatInputContainer"] {
         border: 2px solid #3b82f6 !important;
@@ -88,6 +90,7 @@ st.markdown("""
         color: #ffffff !important;
         border: 1px solid #3b82f6 !important;
         border-radius: 8px;
+        font-size: 16px !important;
     }
     
     .stButton button {
@@ -97,7 +100,8 @@ st.markdown("""
         border-radius: 8px;
         border: none;
         width: 100%;
-        padding: 12px;
+        padding: 14px;
+        font-size: 16px;
         box-shadow: 0px 4px 15px rgba(16, 185, 129, 0.4);
     }
     
@@ -106,12 +110,13 @@ st.markdown("""
         color: #ffff00;
     }
     
+    /* FIX: Larger Font Size for Chat Messages */
     .chat-message {
         padding: 1.5rem;
         border-radius: 10px;
-        margin-bottom: 1rem;
-        line-height: 1.6;
-        font-size: clamp(14px, 3vw, 16px);
+        margin-bottom: 1.2rem;
+        line-height: 1.7;
+        font-size: clamp(16px, 3.5vw, 19px); /* Bada aur saaf font size */
         word-wrap: break-word; 
         overflow-x: auto; 
     }
@@ -128,8 +133,8 @@ st.markdown("""
     
     .chat-header {
         font-weight: bold;
-        margin-bottom: 8px;
-        font-size: clamp(16px, 4vw, 18px);
+        margin-bottom: 10px;
+        font-size: clamp(18px, 4vw, 21px);
     }
     
     .ai-header {
